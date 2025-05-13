@@ -1,0 +1,135 @@
+python3 -m venv venv-graph (to create a virtual environment)
+source venv-graph/bin/activate (to activate the virtual env.)
+
+pip install django(install django on your venv)
+
+django-admin startproject core .  (create a project in this folder)
+
+python3 manage.py startapp users (creating an app name users)
+
+create the user model from AbstractUser
+
+in users/models.py
+TODO
+
+I'm using postgresql database to make migration 
+pip install psycopg2
+
+ add the followings in settings.py
+INSTALLED_APPS = [
+    'users',
+]
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'company',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost'
+    }
+}
+
+AUTH_USER_MODEL = 'users.ExtendUser'
+
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+to use graphQL
+pip install graphene-django
+
+for jwt authentication
+pip install django-graphql-jwt
+
+to know about the dependencies
+ pip freeze > requirements.txt
+
+ add the following in settings.py
+
+ INSTALLED_APPS = [
+    'graphene_django',
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    
+]
+
+GRAPHENE = {
+    'SCHEMA': 'users.schema.schema',
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+python3 manage.py migrate
+
+#create super user for admin access
+python3 manage.py createsuperuser
+Username: ranajitsahoo
+Email: raja123angul@gmail.com
+Password: 
+Password (again): 
+
+
+##Setup DjangoGraphqlAuth
+pip install django-graphql-auth
+
+INSTALLED_APPS = [
+   'graphql_auth',
+]
+
+AUTHENTICATION_BACKENDS = [
+    # "graphql_jwt.backends.JSONWebTokenBackend",
+    "graphql_auth.backends.GraphQLAuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+python3 manage.py migrate
+
+if it is showing error for migrate
+pip install --upgrade django-graphql-auth django-graphql-jwt
+
+run again
+python3 manage.py migrate
+
+
+INSTALLED_APPS = [
+   'django_filters',
+]
+
+
+set the schema in users/schema.py
+add graphql for urls
+
+in graphql
+query{
+    # users are coming from the database by the hrlp of UserQuery and MeQuery
+  users{
+    # edges is helping to collect all the data from the users
+    edges{
+        #node refers to each edge of edges
+      node{
+        #item we want to collect
+        username
+        email
+      }
+    }
+  }
+}
+query{
+    # me refers to the super user
+     me{
+    username
+  }
+}
+
+
+#USer Registration
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+GRAPHQL_JWT = {
+    "JWT_ALLOW_ANY_CLASSES": [
+        'graphql_auth.mutations.Register',
+    ]
+}
